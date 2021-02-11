@@ -1,17 +1,17 @@
-import React, {useRef, useState} from "react";
+import React, {useRef} from "react";
 import {labelImage} from "../../API/ImageAPI";
 
-const Form = () => {
+const Form = ({setImageLabels, setImage}) => {
 
     const imageInput = useRef();
-    const [imageLabels, setImageLabels] = useState([]);
 
     const obtainLabels = async (event) => {
         event.preventDefault();
         event.stopPropagation();
         const imageFile = imageInput.current.files[0];
         const labels = await labelImage(imageFile);
-
+        setImageLabels(labels.data);
+        setImage(imageFile);
     }
 
 
