@@ -17,7 +17,9 @@ const Form = ({imageLabels, setImageLabels, setImage}) => {
         event.stopPropagation();
         const imageFile = imageInput.current.files[0];
         setIsFetching(true);
-        const labels = await labelImage(imageFile);
+        const labels = await labelImage(imageFile,
+            {MaxLabels: maxLabels, MinConfidence: minConfidence}
+            );
         setIsFetching(false);
         setImageLabels(labels.data);
         setImage(imageFile);
@@ -90,7 +92,7 @@ const Form = ({imageLabels, setImageLabels, setImage}) => {
             <div className={styles.labelsContainer}>
                 {imageLabels !== undefined ?
                     imageLabels.map((label) => (
-                        <div className={styles.labels}>
+                        <div className={styles.labels} key={label.Name}>
                             {`${label.Name}: ${label.Confidence.toFixed(2)}%`}
                         </div>
                     )) :
