@@ -1,4 +1,5 @@
 import React, {useEffect, useState, useRef} from "react";
+import {contrast, randomColor} from "../../shared/utils/color";
 import styles from './Image.module.css'
 
 const Image = ({image, labels}) => {
@@ -28,22 +29,37 @@ const Image = ({image, labels}) => {
 
     return (
         <div className={styles.imageWrapper}>
-            <img ref={imageContainer} src="" alt="" width={width} height={height}/>
+            <img ref={imageContainer} src="" alt=""/>
             <div className="boundingBoxes">
                 {
                     boundingBoxes.map((label) => {
                         const boundingBoxesInstances = label.Instances;
 
-                        return boundingBoxesInstances.map(({BoundingBox}) => {
+                        const colorlabel = randomColor();
+
+                        return boundingBoxesInstances.map(({BoundingBox}, index) => {
+
                             const position = {
-                                top: BoundingBox.Top * height,
-                                left: BoundingBox.Left * width,
-                                width: BoundingBox.Width * width,
-                                height: BoundingBox.Height * height,
-                                border: `2px #${Math.floor(Math.random()*16777215).toString(16)} solid`,
+                                top: `${BoundingBox.Top*100}%`,
+                                left: `${BoundingBox.Left*100}%`,
+                                width: `${BoundingBox.Width*100}%`,
+                                height: `${BoundingBox.Height*100}%`,
+                                border: `2.5px #${colorlabel} solid`,
                             }
 
-                            return (<div key={label.Name} className={styles.boundingBox} style={position}></div>)
+                            const tooltipStyle = {
+                                color: contrast(colorlabel),
+                                '--background-color': `#${colorlabel}`,
+                            }
+
+                            return (
+                                <div key={`${label.Name}-${index}`} className={styles.boundingBox} style={position}>
+                                    <div className={styles.tooltip} style={tooltipStyle}>
+                                        {label.Name} <br/>
+                                        {}
+                                    </div>
+                                </div>
+                            )
                         })
 
                     })
