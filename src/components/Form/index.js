@@ -6,12 +6,15 @@ const Form = ({setImageLabels, setImage}) => {
 
     const imageInput = useRef();
     const [selectedFile, setSelectedFile] = useState('');
+    const [isFetching, setIsFetching] = useState(false)
 
     const obtainLabels = async (event) => {
         event.preventDefault();
         event.stopPropagation();
         const imageFile = imageInput.current.files[0];
+        setIsFetching(true);
         const labels = await labelImage(imageFile);
+        setIsFetching(false);
         setImageLabels(labels.data);
         setImage(imageFile);
     }
@@ -40,7 +43,9 @@ const Form = ({setImageLabels, setImage}) => {
                 </span>
             </label>
 
-            <button onClick={obtainLabels} className={styles.submitButton}>Submit Image</button>
+            <button onClick={obtainLabels} className={styles.submitButton}>
+                { isFetching ? '...Loading' : 'Submit Image' }
+            </button>
         </form>
     )
 }
