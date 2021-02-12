@@ -1,0 +1,45 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    text-align: center;
+    padding: 1rem;
+    margin-top: 1rem;
+    border-left: 1px solid;
+    height: 90vh;
+}
+
+.inputFile {
+    display: none;
+}
+
+.fileUpload {
+    border: 2px var(--main-color) solid;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 0.5rem;
+    color: var(--main-color);
+}
+
+.fileUpload:hover,
+.submitButton:hover {
+    background-color: var(--main-color);
+    color: white;
+}
+
+.fileLabel {
+    font-size: 0.8rem;
+}
+
+.submitButton {
+    background: none;
+    border: 2px var(--main-color) solid;
+    border-radius: 5px;
+    color: var(--main-color);
+    cursor: pointer;
+    font-size: 0.8rem;
+
+    padding: 0.5rem 1rem;
+
+    margin-top: 1rem;
+}

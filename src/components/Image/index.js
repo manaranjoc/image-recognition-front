@@ -29,7 +29,7 @@ const Image = ({image, labels}) => {
 
     return (
         <div className={styles.imageWrapper}>
-            <img ref={imageContainer} src="" alt=""/>
+            <img ref={imageContainer} src="" alt="" className={styles.image}/>
             <div className="boundingBoxes">
                 {
                     boundingBoxes.map((label) => {
@@ -56,7 +56,7 @@ const Image = ({image, labels}) => {
                                 <div key={`${label.Name}-${index}`} className={styles.boundingBox} style={position}>
                                     <div className={styles.tooltip} style={tooltipStyle}>
                                         {label.Name} <br/>
-                                        {}
+                                        {label.Confidence.toFixed(2)}%
                                     </div>
                                 </div>
                             )
