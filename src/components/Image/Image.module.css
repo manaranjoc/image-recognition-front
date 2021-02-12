@@ -1,0 +1,7 @@
+.imageWrapper {
+    position: relative;
+}
+
+.boundingBox {
+    position: absolute;
+}
