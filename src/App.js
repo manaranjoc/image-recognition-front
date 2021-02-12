@@ -14,8 +14,9 @@ function App() {
           labels={imageLabels}
       />
       <Form
-        setImage={setImage}
-        setImageLabels={setImageLabels}
+          imageLabels={imageLabels}
+          setImage={setImage}
+          setImageLabels={setImageLabels}
       />
     </div>
   );

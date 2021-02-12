@@ -2,7 +2,7 @@ import React, {useRef, useState} from "react";
 import {labelImage} from "../../API/ImageAPI";
 import styles from "./Form.module.css"
 
-const Form = ({setImageLabels, setImage}) => {
+const Form = ({imageLabels, setImageLabels, setImage}) => {
 
     const imageInput = useRef();
     const maxLabelsInput = useRef();
@@ -86,6 +86,17 @@ const Form = ({setImageLabels, setImage}) => {
             <button onClick={obtainLabels} className={styles.submitButton}>
                 {isFetching ? '...Loading' : 'Submit Image'}
             </button>
+
+            <div className={styles.labelsContainer}>
+                {imageLabels !== undefined ?
+                    imageLabels.map((label) => (
+                        <div className={styles.labels}>
+                            {`${label.Name}: ${label.Confidence.toFixed(2)}%`}
+                        </div>
+                    )) :
+                    ''
+                }
+            </div>
         </div>
     )
 }
