@@ -5,8 +5,12 @@ import styles from "./Form.module.css"
 const Form = ({setImageLabels, setImage}) => {
 
     const imageInput = useRef();
+    const maxLabelsInput = useRef();
+    const minConfidenceInput = useRef();
     const [selectedFile, setSelectedFile] = useState('');
-    const [isFetching, setIsFetching] = useState(false)
+    const [isFetching, setIsFetching] = useState(false);
+    const [maxLabels, setMaxLabels] = useState(10);
+    const [minConfidence, setMinConfidence] = useState(80);
 
     const obtainLabels = async (event) => {
         event.preventDefault();
@@ -23,9 +27,17 @@ const Form = ({setImageLabels, setImage}) => {
         setSelectedFile(imageInput.current.files[0].name);
     }
 
+    const changeMaxLabels = () => {
+        setMaxLabels(maxLabelsInput.current.value);
+    }
+
+    const changeMinConfidence = () => {
+        setMinConfidence(minConfidenceInput.current.value);
+    }
+
 
     return (
-        <form action="" className={styles.form}>
+        <div action="" className={styles.form}>
             <label htmlFor="imageToUpload" className={styles.fileUpload}>
                 <input ref={imageInput}
                        type="file"
@@ -43,10 +55,38 @@ const Form = ({setImageLabels, setImage}) => {
                 </span>
             </label>
 
+            <label htmlFor="maxLabels" className={styles.sliderLabel}>
+                <span>Max Number of Labels: {maxLabels}</span>
+                <input
+                    ref={maxLabelsInput}
+                    name="maxLabels"
+                    type="range"
+                    min="1"
+                    max="20"
+                    defaultValue="10"
+                    className={styles.slider}
+                    onChange={changeMaxLabels}
+                />
+            </label>
+
+            <label htmlFor="minConfidence" className={styles.sliderLabel}>
+                <span>Min Confidence: {minConfidence}</span>
+                <input
+                    ref={minConfidenceInput}
+                    name="minConfidence"
+                    type="range"
+                    min="1"
+                    max="100"
+                    defaultValue="80"
+                    className={styles.slider}
+                    onChange={changeMinConfidence}
+                />
+            </label>
+
             <button onClick={obtainLabels} className={styles.submitButton}>
-                { isFetching ? '...Loading' : 'Submit Image' }
+                {isFetching ? '...Loading' : 'Submit Image'}
             </button>
-        </form>
+        </div>
     )
 }
 
