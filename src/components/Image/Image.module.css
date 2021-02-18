@@ -1,0 +1,50 @@
+.imageWrapper {
+    position: relative;
+    display: inline-block;
+    flex: 3;
+    margin: 2rem;
+    height: fit-content;
+}
+
+.image {
+    width: 100%;
+    max-height: 90vh;
+}
+
+.boundingBox {
+    position: absolute;
+}
+
+.tooltip {
+    --background-color: black;
+    visibility: hidden;
+    position: absolute;
+    top: -4rem;
+    left: 50%;
+    z-index: 1;
+    background-color: var(--background-color);
+    text-align: center;
+    padding: 0.2rem;
+    transition: all 0.25s ease;
+    border-radius: 6px;
+    transform: translateX(-50%);
+    min-width: 100px;
+    font-weight: 600;
+}
+
+.boundingBox:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+.tooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    border-width: 5px;
+    border-style: solid;
+    border-color: black transparent transparent transparent;
+    border-top-color: var(--background-color);
+    transform: translateX(-50%);
+}
