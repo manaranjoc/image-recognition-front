@@ -1,0 +1,9 @@
+.canvasContainer {
+  position: relative;
+}
+
+.canvasBoundingBox {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
