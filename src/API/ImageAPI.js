@@ -11,4 +11,10 @@ const labelImage = (image, parameters) => {
     return axios.post(`${BASE_URL}images`, formData);
 }
 
-export {labelImage}
+const uploadImage = (image) => {
+    const formData = new FormData();
+    formData.append('image', image);
+    return axios.post(`${BASE_URL}images/upload-image`);
+}
+
+export {labelImage, uploadImage}

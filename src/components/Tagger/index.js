@@ -1,10 +1,14 @@
 import {useRef, useState, useEffect, useCallback} from 'react';
 import styles from './Tagger.module.css'
+import {uploadImage} from '../../API/ImageAPI';
+import {createManifest} from './Manifest';
 
 const Tagger = () => {
 
   const [currentImage, setCurrentImage] = useState(0);
   const [boundingBox, setBoundingBox] = useState({width: undefined, height: undefined});
+  const [imageSize, setImageSize] = useState({height: 0, width: 0, depth: 3})
+  const [manifest, setManifest] = useState([]);
   const imageContainer = useRef(null);
   const boundingBoxContainer = useRef(null);
   const imageInput = useRef(null);
@@ -17,25 +21,38 @@ const Tagger = () => {
     const imageToLoad = imageInput.current.files[currentImage];
 
     image.onload = () => {
+      setImageSize({...imageSize, height: image.height, width: image.width})
       context.clearRect(0, 0, 300, 300);
       context.drawImage(image, 0, 0, 300, 300);
-      URL.revokeObjectURL(image.src)
+      URL.revokeObjectURL(image.src);
     }
 
     image.src = URL.createObjectURL(imageToLoad);
 
   }
 
-  const nextImage = () => {
+  const nextImage = async () => {
     const nextImage = currentImage + 1;
+    const newManifest = createManifest(
+      imageInput.current.files[currentImage].name,
+      imageSize,
+      boundingBox,
+      'test'
+    )
+    //await uploadImage(imageInput.current.files[currentImage]);
     if (nextImage < imageInput.current.files.length) {
       setCurrentImage(nextImage);
+      setManifest([...manifest, newManifest])
+    } else {
+      console.log([...manifest, newManifest]);
     }
   }
 
   useEffect(() => {
     if(imageInput.current.files.length !== 0) {
       updateCanvas();
+      const context = boundingBoxContainer.current.getContext('2d');
+      context.clearRect(0, 0, 300, 300)
     }
   }, [currentImage])
 
