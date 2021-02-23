@@ -1,9 +1,9 @@
 const createManifest = (imageName, imageSize, boundingBox, label) => {
   const realBoundingBox = {
-    top: boundingBox.y * imageSize.height / 300,
-    left: boundingBox.x * imageSize.width / 300,
-    width: boundingBox.width * imageSize.width / 300,
-    height: boundingBox.height * imageSize.height / 300,
+    top: Math.floor(boundingBox.y * imageSize.height / 300),
+    left: Math.floor(boundingBox.x * imageSize.width / 300),
+    width: Math.floor(boundingBox.width * imageSize.width / 300),
+    height: Math.floor(boundingBox.height * imageSize.height / 300),
   }
   return {
     "source-ref": `s3://BUCKET/images/${imageName}`,

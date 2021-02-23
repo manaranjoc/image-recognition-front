@@ -1,6 +1,6 @@
 import {useRef, useState, useEffect, useCallback} from 'react';
 import styles from './Tagger.module.css'
-import {uploadImage} from '../../API/ImageAPI';
+import {uploadImage, uploadManifest} from '../../API/ImageAPI';
 import {createManifest} from './Manifest';
 
 const Tagger = () => {
@@ -39,12 +39,13 @@ const Tagger = () => {
       boundingBox,
       'test'
     )
-    //await uploadImage(imageInput.current.files[currentImage]);
+    console.log(imageInput.current.files[currentImage]);
+    await uploadImage(imageInput.current.files[currentImage]);
     if (nextImage < imageInput.current.files.length) {
       setCurrentImage(nextImage);
       setManifest([...manifest, newManifest])
     } else {
-      console.log([...manifest, newManifest]);
+      await uploadManifest([...manifest, newManifest]);
     }
   }
 
@@ -61,7 +62,6 @@ const Tagger = () => {
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
-    console.log(boundingBox)
     if(boundingBox.width === 0 || boundingBox.height === 0) {
       setBoundingBox({...boundingBox, width: x-boundingBox.x, height: y-boundingBox.y})
     } else {
