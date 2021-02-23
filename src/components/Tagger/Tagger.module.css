@@ -1,9 +1,87 @@
+.customTagger {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
 .canvasContainer {
   position: relative;
+  flex: 3;
+  height: 90vh;
+  margin: 2rem;
 }
 
 .canvasBoundingBox {
   position: absolute;
   top: 0;
   left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.canvasImage {
+  width: 100%;
+  height: 100%;
+}
+
+.form {
+  flex: 1;
+  border-left: 1px solid;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.button {
+  background: none;
+  border: 2px var(--main-color) solid;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0.5rem 1rem;
+  margin-top: 1rem;
+  color: var(--main-color);
+}
+
+.fileUpload:hover,
+.button:hover {
+  background-color: var(--main-color);
+  color: white;
+}
+
+.button:disabled {
+  color: gray;
+  border-color: gray;
+  background-color: white;
+  cursor: auto;
+  pointer-events: none;
+}
+
+.input {
+  display: none;
+}
+
+.fileUpload {
+  margin-top: 1rem;
+  border: 2px var(--main-color) solid;
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: var(--main-color);
+  text-align: center;
+  font-size: 0.8rem;
+}
+
+.inputLabel {
+  margin-top: 1rem;
+  border: 2px var(--main-color) solid;
+  padding: 0.5rem;
+  border-radius: 5px;
+  text-decoration: underline;
+}
+
+.modelLabel {
+  text-align: center;
+  color: var(--main-color);
+  margin-top: 1rem;
 }
