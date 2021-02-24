@@ -1,8 +1,9 @@
 import {useRef, useState, useEffect, useCallback} from 'react';
 import styles from './Tagger.module.css'
-import {uploadImage, uploadManifest} from '../../API/ImageAPI';
+import {listModels, uploadImage, uploadManifest} from '../../API/ImageAPI';
 import {createManifest} from './Manifest';
 import { useHistory } from 'react-router-dom';
+import {getRandomInt} from '../../shared/utils/random';
 
 const Tagger = () => {
 
@@ -10,9 +11,10 @@ const Tagger = () => {
   const [boundingBox, setBoundingBox] = useState({width: undefined, height: undefined});
   const [imageSize, setImageSize] = useState({height: 0, width: 0, depth: 3})
   const [manifest, setManifest] = useState([]);
-  const [images, setImages] = useState([]);
+  const [imagesQty, setImagesQty] = useState(null);
   const [label, setLabel] = useState(null);
   const [isBoxMoving, setIsBoxMoving] = useState(false);
+  const [isStarted, setIsStarted] = useState(false);
   const imageContainer = useRef(null);
   const boundingBoxContainer = useRef(null);
   const imageInput = useRef(null);
@@ -50,7 +52,7 @@ const Tagger = () => {
       boundingBoxContainer.current.height,
       boundingBoxContainer.current.width
     )
-    console.log(imageInput.current.files[currentImage]);
+
     await uploadImage(imageInput.current.files[currentImage]);
     if (nextImage < imageInput.current.files.length) {
       setCurrentImage(nextImage);
@@ -131,13 +133,23 @@ const Tagger = () => {
   }, [boundingBox])
 
   const updateNameFiles = () => {
-    setImages(imageInput.current.files);
+    setImagesQty(imageInput.current.files.length);
   }
 
-  const startLabeling = () => {
-    updateCanvas();
+  const startLabeling = async () => {
     const currentLabel = labelInput.current.value;
-    setLabel(currentLabel === '' ? 'Default' : currentLabel);
+    const modelsResponse = await listModels();
+    const isLabelUsed = modelsResponse.data.ProjectVersionDescriptions.some(
+      (model) => model.ProjectVersionArn.match(/\/version\/(\w*)\//)[1] === currentLabel
+    );
+
+    if (isLabelUsed) {
+      alert("Label is already in use");
+    } else {
+      setLabel(currentLabel === '' ? `Default${getRandomInt(0, 1000)}` : currentLabel);
+      updateCanvas();
+      setIsStarted(true);
+    }
   }
 
   return (
@@ -162,20 +174,25 @@ const Tagger = () => {
                  onChange={updateNameFiles}
           />
           <span>
-            {images.length === 0 ? 'Select images' : `Images selected: ${images.length}`}
+            {imagesQty <= 0 ? 'Select images' : `Images selected: ${imagesQty}`}
           </span>
         </label>
         {
           label ? <div className={styles.modelLabel}>Label: {label}</div> :
         <input type="text" placeholder="Label" className={styles.inputLabel} ref={labelInput}/>
         }
-        <button onClick={startLabeling} className={styles.button} disabled={images.length === 0}>
+        <button onClick={startLabeling} className={styles.button} disabled={(imagesQty < 10 || isStarted)}>
           Start Labeling
         </button>
-        <button onClick={nextImage} className={styles.button} disabled={label === null}>
-          {currentImage === images.length-1 ? "Finish labeling" : "Next Image"}
+        <button onClick={nextImage} className={styles.button} disabled={(label === null || boundingBox.width === 0 || boundingBox.width === undefined)}>
+          {currentImage === imagesQty-1 ? "Finish labeling" : "Next Image"}
         </button>
-        {label !== null ? <div className={styles.modelLabel}>Click two points in the image for making a bounding box</div> : null }
+        <div className={styles.modelLabel}>
+          {label !== null ? "Click two points in the image for making a bounding box" : null }
+          {imagesQty<10 ? "Use at least 10 images to train your model" : null}
+          <hr/>
+          {(boundingBox.width === undefined || boundingBox.width === 0)? "No bounding box selected" : null}
+        </div>
       </div>
     </div>
   )

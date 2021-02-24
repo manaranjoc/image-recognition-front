@@ -61,7 +61,7 @@ const Form = ({imageLabels, setImageLabels, setImage}) => {
 
     const retrieveModels = useCallback(async () => {
       const modelsResponse = await listModels();
-      console.log(modelsResponse.data)
+
       const allModels = modelsResponse.data.ProjectVersionDescriptions.map((model) => {
         return {
           ProjectVersionArn: model.ProjectVersionArn,
