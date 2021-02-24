@@ -103,6 +103,7 @@ const Form = ({imageLabels, setImageLabels, setImage}) => {
             )
             }
           )
+          retrieveModels();
         }
 
       }
