@@ -2,6 +2,7 @@ import {useRef, useState, useEffect, useCallback} from 'react';
 import styles from './Tagger.module.css'
 import {uploadImage, uploadManifest} from '../../API/ImageAPI';
 import {createManifest} from './Manifest';
+import { useHistory } from 'react-router-dom';
 
 const Tagger = () => {
 
@@ -11,10 +12,12 @@ const Tagger = () => {
   const [manifest, setManifest] = useState([]);
   const [images, setImages] = useState([]);
   const [label, setLabel] = useState(null);
+  const [isBoxMoving, setIsBoxMoving] = useState(false);
   const imageContainer = useRef(null);
   const boundingBoxContainer = useRef(null);
   const imageInput = useRef(null);
   const labelInput = useRef(null);
+  const history = useHistory();
 
   const updateCanvas = () => {
     const canvas = imageContainer.current;
@@ -43,7 +46,7 @@ const Tagger = () => {
       imageInput.current.files[currentImage].name,
       imageSize,
       boundingBox,
-      'test',
+      label,
       boundingBoxContainer.current.height,
       boundingBoxContainer.current.width
     )
@@ -54,6 +57,7 @@ const Tagger = () => {
       setManifest([...manifest, newManifest])
     } else {
       await uploadManifest([...manifest, newManifest]);
+      history.push('/');
     }
   }
 
@@ -68,6 +72,19 @@ const Tagger = () => {
     }
   }, [currentImage])
 
+  const moveRectangle = useCallback((event) => {
+    const canvas = boundingBoxContainer.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    const context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.globalAlpha = 0.5;
+    context.fillStyle = 'blue';
+    context.fillRect(boundingBox.x, boundingBox.y, x-boundingBox.x, y-boundingBox.y);
+    context.globalAlpha = 1;
+  }, [boundingBoxContainer, boundingBox]);
+
   const drawRectangle = (event) => {
     const canvas = boundingBoxContainer.current;
     canvas.width = canvas.offsetWidth;
@@ -75,20 +92,37 @@ const Tagger = () => {
     const rect = canvas.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
-    console.log("clicking")
 
     if(boundingBox.width === 0 || boundingBox.height === 0) {
-      setBoundingBox({...boundingBox, width: x-boundingBox.x, height: y-boundingBox.y})
+      setIsBoxMoving(false);
+      setBoundingBox({...boundingBox, width: x-boundingBox.x, height: y-boundingBox.y});
     } else {
-      setBoundingBox({width: 0, height: 0, x, y})
+      setBoundingBox({width: 0, height: 0, x, y});
+      setIsBoxMoving(true);
     }
 
   };
 
   useEffect(() => {
-    const context = boundingBoxContainer.current.getContext('2d');
+    try {
+      const boundingCanvas = boundingBoxContainer.current;
+
+      if (isBoxMoving) {
+        boundingCanvas.addEventListener("mousemove", moveRectangle);
+      } else {
+        boundingCanvas.removeEventListener("mousemove", moveRectangle);
+      }
+      return () => boundingCanvas.removeEventListener("mousemove", moveRectangle);
+    } catch (error) {
+      console.error(error);
+    }
+  }, [boundingBoxContainer, moveRectangle, isBoxMoving])
+
+  useEffect(() => {
+    const canvas = boundingBoxContainer.current;
+    const context = canvas.getContext('2d');
     if( boundingBox.width !== 0 && boundingBox.height !== 0) {
-      context.clearRect(0, 0, 300, 300);
+      context.clearRect(0, 0, canvas.width, canvas.height);
       context.globalAlpha = 0.5;
       context.fillStyle = 'blue';
       context.fillRect(boundingBox.x, boundingBox.y, boundingBox.width, boundingBox.height)
@@ -139,7 +173,7 @@ const Tagger = () => {
           Start Labeling
         </button>
         <button onClick={nextImage} className={styles.button} disabled={label === null}>
-          {currentImage <= images.length ? "Next Image" : "Finish labeling"}
+          {currentImage === images.length-1 ? "Finish labeling" : "Next Image"}
         </button>
         {label !== null ? <div className={styles.modelLabel}>Click two points in the image for making a bounding box</div> : null }
       </div>

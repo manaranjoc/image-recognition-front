@@ -1,0 +1,14 @@
+.navbar {
+  padding: 1rem;
+  border-bottom: 1px black solid;
+}
+
+.link {
+  margin-right: 1rem;
+  text-decoration: none;
+  color: var(--main-color);
+}
+
+.linkActive {
+  font-weight: bold;
+}

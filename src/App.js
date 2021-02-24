@@ -4,6 +4,7 @@ import Form from "./components/Form";
 import Image from "./components/Image"
 import {BrowserRouter, Route} from 'react-router-dom';
 import Tagger from './components/Tagger';
+import Navbar from './components/Navbar'
 
 function App() {
   const [image, setImage] = useState();
@@ -11,6 +12,7 @@ function App() {
 
   return (
     <BrowserRouter>
+      <Navbar/>
       <div className={styles.container}>
         <Route path='/' exact>
           <Image

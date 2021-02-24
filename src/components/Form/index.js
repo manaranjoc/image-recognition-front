@@ -61,6 +61,7 @@ const Form = ({imageLabels, setImageLabels, setImage}) => {
 
     const retrieveModels = useCallback(async () => {
       const modelsResponse = await listModels();
+      console.log(modelsResponse.data)
       const allModels = modelsResponse.data.ProjectVersionDescriptions.map((model) => {
         return {
           ProjectVersionArn: model.ProjectVersionArn,
@@ -81,7 +82,11 @@ const Form = ({imageLabels, setImageLabels, setImage}) => {
     }, [])
 
     useEffect(() => {
+
+      const interval = setInterval(retrieveModels, 30000);
       retrieveModels();
+
+      return () => clearInterval(interval);
     }, [retrieveModels])
 
     const startCurrentModel = async () => {
@@ -106,10 +111,10 @@ const Form = ({imageLabels, setImageLabels, setImage}) => {
     return (
         <div className={styles.form}>
             <label htmlFor="available-models" className={styles.labelStartModel}>Select Model to start</label>
-            <select name="available-models" ref={modelToStart} onClick={retrieveModels}>
+            <select name="available-models" ref={modelToStart}>
               { models.toStart.length > 0 ? null: <option value="">All Models running</option>}
               { models.toStart.map((model, index) => (
-                  <option key={index} value={model.ProjectVersionArn}>{model.name}</option>
+                  <option key={index} value={model.ProjectVersionArn} disabled={model.status === 'TRAINING_IN_PROGRESS'}>{model.name}</option>
                 )
                 )}
             </select>
@@ -118,7 +123,7 @@ const Form = ({imageLabels, setImageLabels, setImage}) => {
             </button>
             <hr className={styles.separator}/>
             <label htmlFor="model" className={styles.labelSelectModel}>Choose running Model:</label>
-            <select name="model" ref={modelSelected} onClick={retrieveModels}>
+            <select name="model" ref={modelSelected}>
               <option value="">Default</option>
               { models.running.map((model, index) => (
                 <option key={index} value={model.ProjectVersionArn}>{model.name}</option>
